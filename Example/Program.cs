@@ -9,15 +9,15 @@ namespace QiDiTu.Example.MinHook
         static void Main(string[] args)
         {
             // Initialize MinHook.
-            Helper.initialize();
+            MinHookHelper.initialize();
 
             // Create a hook for MessageBoxW, in disabled state.
-            Helper.createHookApi("user32", "MessageBoxW",
+            MinHookHelper.createHookApi("user32", "MessageBoxW",
                                 new Callback(DetourMessageBoxW), out fpMessageBoxW);
 
 
             // Enable the hook for MessageBoxW.
-            Helper.enableHook("user32", "MessageBoxW");
+            MinHookHelper.enableHook("user32", "MessageBoxW");
 
             const int MB_OK = 0;
 
@@ -25,13 +25,13 @@ namespace QiDiTu.Example.MinHook
             MessageBox(IntPtr.Zero, "Not hooked...", "MinHook Sample", MB_OK);
 
             // Disable the hook for MessageBoxW.
-            Helper.disableHook("user32", "MessageBoxW");
+            MinHookHelper.disableHook("user32", "MessageBoxW");
 
             // Expected to tell "Not hooked...".
             MessageBox(IntPtr.Zero, "Not hooked...", "MinHook Sample", MB_OK);
 
             // Uninitialize MinHook.
-            Helper.uninitialize();
+            MinHookHelper.uninitialize();
         }
 
         public static Callback fpMessageBoxW;

@@ -959,7 +959,7 @@ namespace QiDiTu.Wrapper.MinHook
         }
     }
 
-    public static class Helper
+    public static class MinHookHelper
     {
         /// <summary>
         /// Retrieves the address of an exported function or variable from the specified
