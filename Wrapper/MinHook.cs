@@ -351,6 +351,14 @@ namespace QiDiTu.Wrapper.MinHook
                         IntPtr detour, out IntPtr original, out IntPtr target);
 
         /// <summary>
+        /// Removes an already created hook.
+        /// </summary>
+        /// <param name="target">A pointer to the target function.</param>
+        /// <returns>status</returns>
+        [DllImport("MinHook.dll", EntryPoint = "MH_RemoveHook")]
+        public static extern MH_STATUS MH_RemoveHook(IntPtr target);
+
+        /// <summary>
         /// Translates the MH_STATUS to its name as a string.
         /// </summary>
         /// <param name="status">status</param>
@@ -1308,6 +1316,26 @@ namespace QiDiTu.Wrapper.MinHook
         public static void queueDisableAllHook()
         {
             MinHook.MH_STATUS status = MinHook.MH_QueueDisableHook(IntPtr.Zero);
+            if (status != MinHook.MH_STATUS.MH_OK)
+            {
+                throw getExceptionByStatu(status);
+            }
+        }
+
+        /// <summary>
+        /// Removes an already created hook.
+        /// </summary>
+        /// <param name="moduleName">Loaded module name which contains the
+        /// target function.
+        /// </param>
+        /// <param name="procName">Target function name</param>
+        /// <exception cref="ModuleNotFoundException"></exception>
+        /// <exception cref="FunctionNotFoundException"></exception>
+        /// <exception cref="MinHookException">include all subclass</exception>
+        public static void removeHook(string moduleName, string procName)
+        {
+            IntPtr address = getProcAddress(moduleName, procName);
+            MinHook.MH_STATUS status = MinHook.MH_RemoveHook(address);
             if (status != MinHook.MH_STATUS.MH_OK)
             {
                 throw getExceptionByStatu(status);
