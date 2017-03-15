@@ -979,14 +979,13 @@ namespace QiDiTu.Wrapper.MinHook
         /// </returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ExactSpelling = true,
                     SetLastError = true)]
-        public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
 
         /// <summary>
         /// Initialize the MinHook library. You must call this function EXACTLY ONCE
         /// at the beginning of your program.
         /// </summary>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_Initialize"/>
         public static void initialize()
         {
             MinHook.MH_STATUS status = MinHook.MH_Initialize();
@@ -1001,7 +1000,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// ONCE at the end of your program.
         /// </summary>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_Uninitialize"/>
         public static void uninitialize()
         {
             MinHook.MH_STATUS status = MinHook.MH_Uninitialize();
@@ -1021,7 +1019,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// <exception cref="ModuleNotFoundException"></exception>
         /// <exception cref="FunctionNotFoundException"></exception>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_EnableHook(IntPtr)"/>
         public static void enableHook(string moduleName, string procName)
         {
             IntPtr address = getProcAddress(moduleName, procName);
@@ -1036,7 +1033,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// Enable all created hooks in one go.
         /// </summary>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_EnableHook(IntPtr)"/>
         public static void enableAllHook()
         {
             MinHook.MH_STATUS status = MinHook.MH_EnableHook(IntPtr.Zero);
@@ -1057,7 +1053,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// <exception cref="ModuleNotFoundException"></exception>
         /// <exception cref="FunctionNotFoundException"></exception>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_DisableHook(IntPtr)"/>
         public static void disableHook(string moduleName, string procName)
         {
             IntPtr address = getProcAddress(moduleName, procName);
@@ -1072,7 +1067,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// Disable all created hooks in one go.
         /// </summary>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_DisableHook(IntPtr)"/>
         public static void disnableAllHook()
         {
             MinHook.MH_STATUS status = MinHook.MH_DisableHook(IntPtr.Zero);
@@ -1085,17 +1079,17 @@ namespace QiDiTu.Wrapper.MinHook
         /// <summary>
         /// Creates a Hook for the specified target function, in disabled state.
         /// </summary>
-        /// <param name="target">Target function, which will be
+        /// <param name="target">Target function pointer, which will be
         /// overridden by the detour function.
         /// </param>
         /// <param name="detour">Detour delegate, which will override
         /// the target function.
         /// </param>
         /// <exception cref="MinHookException">include all subclass</exception>
-        public static void createHook<[DelegateConstraint] T>(IntPtr pTarget, T detour)
+        public static void createHook<[DelegateConstraint] T>(IntPtr target, T detour)
         {
             IntPtr ptr = Marshal.GetFunctionPointerForDelegate(detour);
-            MinHook.MH_STATUS status = MinHook.MH_CreateHook(pTarget, ptr, IntPtr.Zero);
+            MinHook.MH_STATUS status = MinHook.MH_CreateHook(target, ptr, IntPtr.Zero);
             if (status != MinHook.MH_STATUS.MH_OK)
             {
                 throw getExceptionByStatu(status);
@@ -1262,7 +1256,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// <exception cref="ModuleNotFoundException"></exception>
         /// <exception cref="FunctionNotFoundException"></exception>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_QueueEnableHook(IntPtr)"/>
         public static void queueEnableHook(string moduleName, string procName)
         {
             IntPtr address = getProcAddress(moduleName, procName);
@@ -1277,7 +1270,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// Queues to enable an already all created hook.
         /// </summary>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_QueueEnableHook(IntPtr)"/>
         public static void queueEnableAllHook()
         {
             MinHook.MH_STATUS status = MinHook.MH_QueueEnableHook(IntPtr.Zero);
@@ -1297,7 +1289,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// <exception cref="ModuleNotFoundException"></exception>
         /// <exception cref="FunctionNotFoundException"></exception>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_QueueDisableHook(IntPtr)"/>
         public static void queueDisableHook(string moduleName, string procName)
         {
             IntPtr address = getProcAddress(moduleName, procName);
@@ -1312,7 +1303,6 @@ namespace QiDiTu.Wrapper.MinHook
         /// Queues to disable an already all created hook.
         /// </summary>
         /// <exception cref="MinHookException">include all subclass</exception>
-        /// <see cref="MinHook.MH_QueueDisableHook(IntPtr)"/>
         public static void queueDisableAllHook()
         {
             MinHook.MH_STATUS status = MinHook.MH_QueueDisableHook(IntPtr.Zero);
@@ -1396,13 +1386,13 @@ namespace QiDiTu.Wrapper.MinHook
         }
 
         /// <summary>
-        /// convert minhook status to exception
+        /// Convert minhook status to exception
         /// </summary>
-        /// <param name="statu">MinHook exception statu</param>
-        /// <returns></returns>
-        private static MinHookException getExceptionByStatu(MinHook.MH_STATUS statu)
+        /// <param name="status">MinHook exception status</param>
+        /// <returns>MinHookException</returns>
+        private static MinHookException getExceptionByStatu(MinHook.MH_STATUS status)
         {
-            switch (statu)
+            switch (status)
             {
                 case MinHook.MH_STATUS.MH_ERROR_ALREADY_CREATED:
                 {
@@ -1454,7 +1444,7 @@ namespace QiDiTu.Wrapper.MinHook
                 }
                 default:
                 {
-                    return new MinHookException();
+                    return new MinHookException(status);
                 }
             }
         }
